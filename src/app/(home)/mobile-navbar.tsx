@@ -24,7 +24,7 @@ interface Props {
 export const MobileNavbar = ({ items, onOpenChange, open }: Props) => {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="p-o transition-none">
+      <SheetContent side="left" className="p-0 transition-none">
         <SheetHeader className="p-4 border-b">
           <div>
             <SheetTitle>Menu</SheetTitle>
