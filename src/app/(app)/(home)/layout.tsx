@@ -6,6 +6,7 @@ import { Navbar } from "./navbar";
 import { Footer } from "./footer";
 import { SearchFilter } from "./search-filters/search-filter";
 import { Category } from "@/payload-types";
+import { CustomCategory } from "./types";
 
 interface Props {
   children: React.ReactNode;
@@ -20,9 +21,10 @@ const Layout = async ({ children }: Props) => {
     pagination: false, //load every document
     depth: 1, //populate nested document if 0 only id would be returned only up to given depth
     where: { parent: { exists: false } },
+    sort: "name",
   });
   //At  depth 1 subcaterory with be of type Category
-  const formatedData = data.docs.map((doc) => ({
+  const formatedData: CustomCategory[] = data.docs.map((doc) => ({
     ...doc,
     subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
       ...(doc as Category),

@@ -3,6 +3,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 https://github.com/hasheddev/multitenant-ecommerce.git
 https://payloadcms.com/ payload content management system
 mongodb
+bunx create-payload-app --use-bun
 
 ## Getting Started
 
