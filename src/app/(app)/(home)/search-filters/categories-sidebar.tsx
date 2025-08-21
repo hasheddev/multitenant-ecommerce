@@ -2,7 +2,6 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { CustomCategory } from "../types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
@@ -10,23 +9,24 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useTRPC } from "@/trpc/client";
+import { useQuery } from "@tanstack/react-query";
+import { CategoriesGetManyOutput } from "@/modules/categories/types";
 
 interface SidebarProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  data: CustomCategory[];
 }
 
-export const CategoriesSidebar = ({
-  open,
-  onOpenChange,
-  data,
-}: SidebarProps) => {
-  const [parentCategories, setParentCaregories] = useState<
-    CustomCategory[] | null
+export const CategoriesSidebar = ({ open, onOpenChange }: SidebarProps) => {
+  const trpc = useTRPC();
+  const { data } = useQuery(trpc.categories.getMany.queryOptions());
+
+  const [parentCategories, setParentCaregories] =
+    useState<CategoriesGetManyOutput | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<
+    CategoriesGetManyOutput[1] | null
   >(null);
-  const [selectedCategory, setSelectedCategory] =
-    useState<CustomCategory | null>(null);
 
   const currentCategories = parentCategories ?? data ?? [];
   const router = useRouter();
@@ -37,9 +37,11 @@ export const CategoriesSidebar = ({
     setSelectedCategory(null);
   };
 
-  function handleCategoryClick(category: CustomCategory): void {
+  function handleCategoryClick(category: CategoriesGetManyOutput[1]): void {
     if (category.subcategories && category.subcategories.length > 0) {
-      setParentCaregories(category.subcategories as CustomCategory[]);
+      setParentCaregories(
+        category.subcategories as unknown as CategoriesGetManyOutput
+      );
       setSelectedCategory(category);
     } else {
       if (parentCategories && selectedCategory) {
@@ -84,7 +86,7 @@ export const CategoriesSidebar = ({
               Back
             </button>
           )}
-          {currentCategories.map((category) => (
+          {currentCategories?.map((category) => (
             <button
               onClick={() => handleCategoryClick(category)}
               className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center text-base font-medium justify-between"

@@ -1,15 +1,17 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { useRef, useState } from "react";
-import { useDropdownPosition } from "./use-dropdown-position";
-import { SubcategoryMenu } from "./subcategory-menu";
-import { CustomCategory } from "../types";
 import Link from "next/link";
 
+import { CategoriesGetManyOutput } from "@/modules/categories/types";
+import { cn } from "@/lib/utils";
+
+import { Button } from "@/components/ui/button";
+import { useDropdownPosition } from "./use-dropdown-position";
+import { SubcategoryMenu } from "./subcategory-menu";
+
 interface Props {
-  category: CustomCategory;
+  category: CategoriesGetManyOutput[1];
   isActive?: boolean;
   isNavigationHovered?: boolean;
 }
@@ -36,11 +38,11 @@ export const CategoryDropdown = ({
     }
   };
 
-  const toggleDropDown = () => {
-    if (category.subcategories?.docs?.length) {
-      setIsopen(!isOpen);
-    }
-  };
+  //   const toggleDropDown = () => {
+  //     if (category.subcategories?.docs?.length) {
+  //       setIsopen(!isOpen);
+  //     }
+  //   };
 
   return (
     <div
@@ -48,7 +50,7 @@ export const CategoryDropdown = ({
       ref={dropdownRef}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      onClick={toggleDropDown}
+      // onClick={toggleDropDown}
     >
       <div className="relative">
         <Button
