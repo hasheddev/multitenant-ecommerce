@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { ListFilterIcon } from "lucide-react";
+import { useParams } from "next/navigation";
 
 import { CategoryDropdown } from "./category-dropdown";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ interface CategoriesProps {
 }
 
 export const Categories = ({ data }: CategoriesProps) => {
+  const params = useParams();
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const viewAllRef = useRef<HTMLDivElement>(null);
@@ -22,7 +24,8 @@ export const Categories = ({ data }: CategoriesProps) => {
   const [isAnyHovered, setIsAnyHovered] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const activeCategory = "all";
+  const category = params.category as string | undefined;
+  const activeCategory = category || "all";
   const activeCategoryIndex = data.findIndex((c) => c.slug === activeCategory);
   const isACtiveCategoryHidden =
     activeCategoryIndex >= visibleCount && activeCategoryIndex !== -1;
@@ -86,6 +89,7 @@ export const Categories = ({ data }: CategoriesProps) => {
         ))}
         <div ref={viewAllRef} className="shrink-0">
           <Button
+            variant="elevated"
             onClick={() => setIsSidebarOpen(true)}
             className={cn(
               "h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black",
