@@ -6,6 +6,17 @@ import { Category } from "@/payload-types";
 export const productsRouter = createTRPCRouter({
   getMany: baseProcedure.input(productSchema).query(async ({ ctx, input }) => {
     const where: Where = {};
+    if (input.minPrice) {
+      where.price = {
+        greater_than_equal: input.minPrice,
+      };
+    }
+    if (input.maxPrice) {
+      where.price = {
+        less_than_equal: input.maxPrice,
+      };
+    }
+
     if (input.category) {
       const categoriesData = await ctx.db.find({
         collection: "categories",

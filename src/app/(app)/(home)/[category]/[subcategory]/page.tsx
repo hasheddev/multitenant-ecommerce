@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import {
@@ -5,7 +6,6 @@ import {
   ProductListSkeleton,
 } from "@/modules/products/ui/components/product-list";
 import { getQueryClient, trpc } from "@/trpc/server";
-import { Suspense } from "react";
 
 interface Props {
   params: Promise<{ subcategory: string }>;
