@@ -4,6 +4,7 @@ import { SearchParams } from "nuqs";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { loadProductFilters } from "@/modules/products/search-params";
 import { ProductListView } from "@/modules/products/ui/views/product-list-view";
+import { DEFAULT_LIMIT } from "@/constants";
 
 interface Props {
   params: Promise<{ subcategory: string }>;
@@ -22,8 +23,12 @@ const SubCategory = async ({ params, searchParams }: Props) => {
     // If the category is favicon.ico, simply exit and do nothing.
     return;
   }
-  void queryClient.prefetchQuery(
-    trpc.products.getMany.queryOptions({ category, ...filters })
+  void queryClient.prefetchInfiniteQuery(
+    trpc.products.getMany.infiniteQueryOptions({
+      category,
+      ...filters,
+      limit: DEFAULT_LIMIT,
+    })
   );
 
   return (
