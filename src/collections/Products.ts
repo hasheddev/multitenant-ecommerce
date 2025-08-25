@@ -20,6 +20,7 @@ export const Products: CollectionConfig = {
       hasMany: false,
     },
     { name: "image", type: "upload", relationTo: "media" },
+    { name: "tags", type: "relationship", relationTo: "tags", hasMany: true },
     {
       name: "refundPolicy",
       type: "select",

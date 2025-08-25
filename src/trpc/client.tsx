@@ -23,8 +23,18 @@ function getQueryClient() {
 
 function getUrl() {
   const base = (() => {
-    if (typeof window === "undefined") return "";
-    return process.env.NEXT_PUBLIC_APP_URL!;
+    if (typeof window !== "undefined") {
+      // Browser: use the current host
+      return window.location.origin;
+    }
+    // If we are on the server, use the environment variable for the server
+    // We assume that the environment variable APP_URL is set for the server
+    // Alternatively, we can use NEXT_PUBLIC_APP_URL if it's available at runtime (but it's not by default)
+    return (
+      process.env.APP_URL ||
+      process.env.NEXT_PUBLIC_APP_URL ||
+      "http://localhost:3000"
+    );
   })();
   return `${base}/api/trpc`;
 }
