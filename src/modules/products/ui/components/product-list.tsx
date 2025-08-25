@@ -10,7 +10,7 @@ import { DEFAULT_LIMIT } from "@/constants";
 import { Button } from "@/components/ui/button";
 
 interface Props {
-  category: string;
+  category?: string;
 }
 
 export const ProductList = ({ category }: Props) => {
