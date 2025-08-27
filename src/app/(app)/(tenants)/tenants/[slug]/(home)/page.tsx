@@ -8,25 +8,18 @@ import { loadProductFilters } from "@/modules/products/search-params";
 import { ProductListView } from "@/modules/products/ui/views/product-list-view";
 
 interface Props {
-  params: Promise<{ category: string }>;
+  params: Promise<{ slug: string }>;
   searchParams: Promise<SearchParams>;
 }
 
-const Category = async ({ params, searchParams }: Props) => {
-  const { category } = await params;
+const Page = async ({ params, searchParams }: Props) => {
+  const { slug: tenantSlug } = await params;
+
   const filters = await loadProductFilters(searchParams);
   const queryClient = getQueryClient();
-
-  if (
-    typeof category === "string" &&
-    category.toLowerCase() === "favicon.ico"
-  ) {
-    // If the category is favicon.ico, simply exit and do nothing.
-    return;
-  }
   void queryClient.prefetchInfiniteQuery(
     trpc.products.getMany.infiniteQueryOptions({
-      category,
+      tenantSlug,
       ...filters,
       limit: DEFAULT_LIMIT,
     })
@@ -34,9 +27,9 @@ const Category = async ({ params, searchParams }: Props) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProductListView category={category} />
+      <ProductListView tenantSlug={tenantSlug} narrowView />
     </HydrationBoundary>
   );
 };
 
-export default Category;
+export default Page;

@@ -196,6 +196,7 @@ export interface Tenant {
    * This is the subdomain for the (e.g. slug.hamroad.com)
    */
   slug: string;
+  image?: (string | null) | Media;
   stripeAccountId: string;
   /**
    * You cannot create products until you submit your Stripe details
@@ -384,6 +385,7 @@ export interface TagsSelect<T extends boolean = true> {
 export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  image?: T;
   stripeAccountId?: T;
   stripeDetailsSubmitted?: T;
   updatedAt?: T;

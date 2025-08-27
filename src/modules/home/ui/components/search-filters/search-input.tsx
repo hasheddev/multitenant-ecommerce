@@ -33,7 +33,7 @@ export const SearchInput = ({ disabled }: Props) => {
       </div>
       <Button
         variant="elevated"
-        className="size-12 shrink-o flex lg:hidden"
+        className="size-12 shrink-0 flex lg:hidden"
         onClick={() => setIsOpen(true)}
       >
         <ListFilterIcon />
