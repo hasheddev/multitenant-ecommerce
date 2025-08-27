@@ -18,6 +18,20 @@ export const productSchema = z.object({
 });
 
 export const productsRouter = createTRPCRouter({
+  getOne: baseProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const product = await ctx.db.findByID({
+        collection: "products",
+        depth: 2,
+        id: input.id,
+      });
+      return {
+        ...product,
+        image: product.image as Media | null,
+        tenant: product.tenant as Tenant & { image: Media | null },
+      };
+    }),
   getMany: baseProcedure.input(productSchema).query(async ({ ctx, input }) => {
     const where: Where = {};
     let sort: Sort = "-createdAt";
