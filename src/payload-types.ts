@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     categories: Category;
     media: Media;
+    orders: Order;
     products: Product;
     tags: Tag;
     tenants: Tenant;
@@ -85,6 +86,7 @@ export interface Config {
   collectionsSelect: {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
@@ -164,55 +166,14 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "products".
+ * via the `definition` "orders".
  */
-export interface Product {
-  id: string;
-  tenant?: (string | null) | Tenant;
-  name: string;
-  description?: string | null;
-  /**
-   * Price in USD
-   */
-  price: number;
-  category?: (string | null) | Category;
-  image?: (string | null) | Media;
-  tags?: (string | Tag)[] | null;
-  refundPolicy?: ('30-day' | '14-day' | '7-day' | '3-day' | '1-day' | 'no-refunds') | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tenants".
- */
-export interface Tenant {
-  id: string;
-  /**
-   * This is the name of the store (e.g. Grace's Store)
-   */
-  name: string;
-  /**
-   * This is the subdomain for the (e.g. slug.hamroad.com)
-   */
-  slug: string;
-  image?: (string | null) | Media;
-  stripeAccountId: string;
-  /**
-   * You cannot create products until you submit your Stripe details
-   */
-  stripeDetailsSubmitted?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tags".
- */
-export interface Tag {
+export interface Order {
   id: string;
   name: string;
-  products?: (string | Product)[] | null;
+  user?: (string | null) | User;
+  product?: (string | null) | Product;
+  stripeCheckoutSessionId: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -250,6 +211,60 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants".
+ */
+export interface Tenant {
+  id: string;
+  /**
+   * This is the name of the store (e.g. Grace's Store)
+   */
+  name: string;
+  /**
+   * This is the subdomain for the (e.g. slug.hamroad.com)
+   */
+  slug: string;
+  image?: (string | null) | Media;
+  stripeAccountId: string;
+  /**
+   * You cannot create products until you submit your Stripe details
+   */
+  stripeDetailsSubmitted?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: string;
+  tenant?: (string | null) | Tenant;
+  name: string;
+  description?: string | null;
+  /**
+   * Price in USD
+   */
+  price: number;
+  category?: (string | null) | Category;
+  image?: (string | null) | Media;
+  tags?: (string | Tag)[] | null;
+  refundPolicy?: ('30-day' | '14-day' | '7-day' | '3-day' | '1-day' | 'no-refunds') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: string;
+  name: string;
+  products?: (string | Product)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -262,6 +277,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: string | Order;
       } | null)
     | ({
         relationTo: 'products';
@@ -351,6 +370,18 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  name?: T;
+  user?: T;
+  product?: T;
+  stripeCheckoutSessionId?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
