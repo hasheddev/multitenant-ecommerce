@@ -47,13 +47,56 @@ export const productsRouter = createTRPCRouter({
         isPurchased = !!ordersData.docs[0];
       }
 
+      const reviews = await ctx.db.find({
+        collection: "reviews",
+        pagination: false,
+        where: {
+          product: {
+            equals: input.id,
+          },
+        },
+      });
+
+      const reviewRating =
+        reviews.docs.length === 0
+          ? 0
+          : reviews.docs.reduce((acc, review) => acc + review.rating, 0) /
+            reviews.totalDocs;
+
+      const ratingDistribution: Record<number, number> = {
+        5: 0,
+        4: 0,
+        3: 0,
+        2: 0,
+        1: 0,
+      };
+      if (reviews.totalDocs > 0) {
+        reviews.docs.forEach((review) => {
+          const rating = review.rating;
+          if (rating >= 1 && rating < 6) {
+            ratingDistribution[rating] = (ratingDistribution[rating] || 0) + 1;
+          }
+        });
+        Object.keys(ratingDistribution).forEach((key) => {
+          const rating = Number(key);
+          const count = ratingDistribution[rating] || 0;
+          ratingDistribution[rating] = Math.round(
+            (count / reviews.totalDocs) * 100
+          );
+        });
+      }
+
       return {
         ...product,
         isPurchased,
+        reviewRating,
+        reviewCount: reviews.totalDocs,
+        ratingDistribution,
         image: product.image as Media | null,
         tenant: product.tenant as Tenant & { image: Media | null },
       };
     }),
+
   getMany: baseProcedure.input(productSchema).query(async ({ ctx, input }) => {
     const where: Where = {};
     let sort: Sort = "-createdAt";
@@ -63,10 +106,10 @@ export const productsRouter = createTRPCRouter({
     }
 
     if (input?.sort === "trending") {
-      sort = "name";
+      sort = "+createdAt";
     }
     if (input?.sort === "hot_and_new") {
-      sort = "+createdAt";
+      sort = "-createdAt";
     }
 
     if (input.minPrice && input.maxPrice) {
@@ -136,9 +179,29 @@ export const productsRouter = createTRPCRouter({
       //   sort: "name",
     });
 
+    const dataWithSummarizedReviews = await Promise.all(
+      data.docs.map(async (doc) => {
+        const reviewsData = await ctx.db.find({
+          collection: "reviews",
+          pagination: false,
+          where: {
+            product: {
+              equals: doc.id,
+            },
+          },
+        });
+        const reviewRating =
+          reviewsData.docs.length === 0
+            ? 0
+            : reviewsData.docs.reduce((acc, review) => acc + review.rating, 0) /
+              reviewsData.totalDocs;
+        return { ...doc, reviewCount: reviewsData.totalDocs, reviewRating };
+      })
+    );
+
     return {
       ...data,
-      docs: data.docs.map((doc) => ({
+      docs: dataWithSummarizedReviews.map((doc) => ({
         ...doc,
         image: doc.image as Media | null,
         tenant: doc.tenant as Tenant & { image: Media | null },

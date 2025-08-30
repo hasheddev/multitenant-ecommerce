@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { InboxIcon } from "lucide-react";
 
@@ -10,8 +11,9 @@ import { ProductCard, ProductCardSkeleton } from "./product-card";
 import { Button } from "@/components/ui/button";
 
 export const ProductList = () => {
+  const router = useRouter();
   const trpc = useTRPC();
-  const { data, hasNextPage, isFetchingNextPage, fetchNextPage } =
+  const { data, error, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useSuspenseInfiniteQuery(
       trpc.library.getMany.infiniteQueryOptions(
         { limit: DEFAULT_LIMIT },
@@ -21,6 +23,10 @@ export const ProductList = () => {
         }
       )
     );
+
+  if (error?.data?.code === "UNAUTHORIZED") {
+    router.push("/sign-in");
+  }
 
   if (data.pages?.[0]?.docs.length === 0) {
     return (
@@ -48,8 +54,8 @@ export const ProductList = () => {
               imageUrl={prod.image?.url}
               tenantSlug={prod.tenant?.slug}
               tenantImageUrl={prod.tenant?.image?.url}
-              reviewRating={3}
-              reviewCount={5}
+              reviewRating={prod.reviewRating}
+              reviewCount={prod.reviewCount}
             />
           ))}
       </div>

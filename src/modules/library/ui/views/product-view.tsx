@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { ArrowLeftIcon } from "lucide-react";
+
 import { useTRPC } from "@/trpc/client";
 import { ReviewSidebar } from "../components/review-sidebar";
 
@@ -11,10 +13,15 @@ interface Props {
 }
 
 export const ProductView = ({ productId }: Props) => {
+  const router = useRouter();
   const trpc = useTRPC();
-  const { data } = useSuspenseQuery(
+  const { data, error } = useSuspenseQuery(
     trpc.library.getOne.queryOptions({ productId })
   );
+
+  if (error?.data?.code === "UNAUTHORIZED") {
+    router.push("/sign-in");
+  }
   return (
     <div className="min-h-screen bg-white">
       <nav className="p-4 bg-[#f4f4f0] w-full border-b">
