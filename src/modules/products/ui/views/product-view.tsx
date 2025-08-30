@@ -14,7 +14,10 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
 const CartButton = dynamic(
-  () => import("@/components/cart-button").then((mod) => mod.CartButton),
+  () =>
+    import("@/modules/tenants/ui/components/cart-button").then(
+      (mod) => mod.CartButton
+    ),
   {
     ssr: false,
     loading: () => (
