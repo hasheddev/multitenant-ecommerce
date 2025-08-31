@@ -110,6 +110,9 @@ export const checkoutRouter = createTRPCRouter({
         collection: "products",
         depth: 2,
         pagination: false,
+        select: {
+          content: false,
+        },
         where: {
           id: {
             in: input.ids,

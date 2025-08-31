@@ -1,7 +1,7 @@
 import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
-import { Media, Tenant } from "@/payload-types";
+import { Media, Review, Tenant } from "@/payload-types";
 import { DEFAULT_LIMIT } from "@/constants";
 import { TRPCError } from "@trpc/server";
 
@@ -82,27 +82,38 @@ export const libraryRouter = createTRPCRouter({
         },
       });
 
-      const dataWithSummarizedReviews = await Promise.all(
-        productsData.docs.map(async (doc) => {
-          const reviewsData = await ctx.db.find({
-            collection: "reviews",
-            pagination: false,
-            where: {
-              product: {
-                equals: doc.id,
-              },
-            },
-          });
-          const reviewRating =
-            reviewsData.docs.length === 0
-              ? 0
-              : reviewsData.docs.reduce(
-                  (acc, review) => acc + review.rating,
-                  0
-                ) / reviewsData.totalDocs;
-          return { ...doc, reviewCount: reviewsData.totalDocs, reviewRating };
-        })
-      );
+      const reviewsProductIds = productsData.docs.map((doc) => doc.id);
+
+      const productReviews = await ctx.db.find({
+        collection: "reviews",
+        pagination: false,
+        depth: 0,
+        where: {
+          product: {
+            in: reviewsProductIds,
+          },
+        },
+      });
+      const productToReviews: Record<string, Review[]> = {};
+
+      productReviews.docs.forEach((review) => {
+        const productId = review.product as string;
+        if (!productToReviews[productId]) {
+          productToReviews[productId] = [];
+        }
+        productToReviews[productId].push(review);
+      });
+
+      const dataWithSummarizedReviews = productsData.docs.map((doc) => {
+        const id = doc.id;
+        const length = productToReviews[id]?.length || 0;
+        const reviews = productToReviews[id] || [];
+        const reviewRating =
+          length === 0
+            ? 0
+            : reviews.reduce((acc, review) => acc + review.rating, 0) / length;
+        return { ...doc, reviewCount: length, reviewRating };
+      });
 
       return {
         ...productsData,

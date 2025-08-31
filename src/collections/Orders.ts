@@ -1,7 +1,14 @@
+import { isSuperAdmin } from "@/lib/access";
 import type { CollectionConfig } from "payload";
 
 export const Orders: CollectionConfig = {
   slug: "orders",
+  access: {
+    read: ({ req }) => isSuperAdmin(req.user),
+    create: ({ req }) => isSuperAdmin(req.user),
+    delete: ({ req }) => isSuperAdmin(req.user),
+    update: ({ req }) => isSuperAdmin(req.user),
+  },
   admin: {
     useAsTitle: "name",
   },
@@ -18,6 +25,13 @@ export const Orders: CollectionConfig = {
       relationTo: "products",
       hasMany: false,
     },
-    { name: "stripeCheckoutSessionId", type: "text", required: true },
+    {
+      name: "stripeCheckoutSessionId",
+      type: "text",
+      required: true,
+      admin: {
+        description: "Ckeckout session associated with the order",
+      },
+    },
   ],
 };
