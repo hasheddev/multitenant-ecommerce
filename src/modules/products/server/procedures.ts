@@ -209,8 +209,8 @@ export const productsRouter = createTRPCRouter({
 
     const dataWithSummarizedReviews = data.docs.map((doc) => {
       const id = doc.id;
-      const length = productToReviews[id]?.length || 0;
       const reviews = productToReviews[id] || [];
+      const length = reviews.length;
       const reviewRating =
         length === 0
           ? 0
