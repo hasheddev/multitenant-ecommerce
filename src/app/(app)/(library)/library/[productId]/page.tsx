@@ -7,6 +7,8 @@ import {
   ProductViewSkeleton,
 } from "@/modules/library/ui/views/product-view";
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ productId: string }>;
 }

@@ -4,6 +4,8 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { DEFAULT_LIMIT } from "@/constants";
 import { LibraryView } from "@/modules/library/ui/views/library-view";
 
+export const dynamic = "force-dynamic";
+
 const Page = async () => {
   const queryClient = getQueryClient();
   void queryClient.prefetchInfiniteQuery(
