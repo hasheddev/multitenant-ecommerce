@@ -7,13 +7,13 @@ import { CheckIcon, LinkIcon, StarIcon } from "lucide-react";
 import { Fragment, useState } from "react";
 import { toast } from "sonner";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { RichText } from "@payloadcms/richtext-lexical/react";
 
 import { useTRPC } from "@/trpc/client";
 import { formatCurrency, generateTenantURL } from "@/lib/utils";
 import { StarRating } from "@/components/star-rating";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-
 const CartButton = dynamic(
   () =>
     import("@/modules/tenants/ui/components/cart-button").then(
@@ -108,7 +108,7 @@ export const ProductView = ({ tenantSlug, productId }: Props) => {
             </div>
             <div className="p-6">
               {data.description ? (
-                <p>{data.description}</p>
+                <RichText data={data.description} />
               ) : (
                 <p className="font-medium text-muted-foreground italic">
                   No description provided
@@ -134,7 +134,7 @@ export const ProductView = ({ tenantSlug, productId }: Props) => {
                       setIscopied(true);
                       navigator.clipboard.writeText(window.location.href);
                       toast.success("URL copied to clipboard");
-                      setTimeout(() => setIscopied(false), 1500);
+                      setTimeout(() => setIscopied(false), 2000);
                     }}
                   >
                     {isCopied ? <CheckIcon /> : <LinkIcon />}
@@ -177,6 +177,23 @@ export const ProductView = ({ tenantSlug, productId }: Props) => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const ProductViewSkeleton = () => {
+  return (
+    <div className="px-4 lg:px-12 py-10">
+      <div className="border rounded-sm bg-white overflow-hidden">
+        <div className="relative aspect-[3.9] border-b">
+          <Image
+            src={"/placeholder.png"}
+            alt="placeholder"
+            fill
+            className="object-cover"
+          />
         </div>
       </div>
     </div>

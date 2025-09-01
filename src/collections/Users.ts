@@ -21,6 +21,7 @@ const defaultTenantArrayField = tenantsArrayField({
 
 export const Users: CollectionConfig = {
   slug: "users",
+
   access: {
     read: () => true,
     create: ({ req }) => isSuperAdmin(req.user),

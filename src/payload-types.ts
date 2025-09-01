@@ -153,6 +153,7 @@ export interface Category {
  */
 export interface Media {
   id: string;
+  tenant?: (string | null) | Tenant;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -165,6 +166,32 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants".
+ */
+export interface Tenant {
+  id: string;
+  /**
+   * This is the name of the store (e.g. Grace's Store)
+   */
+  name: string;
+  /**
+   * This is the subdomain for the (e.g. slug.hamroad.com)
+   */
+  slug: string;
+  image?: (string | null) | Media;
+  /**
+   * Stripe Account ID associated with your shop
+   */
+  stripeAccountId: string;
+  /**
+   * You cannot create products until you submit your Stripe details
+   */
+  stripeDetailsSubmitted?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -219,32 +246,6 @@ export interface User {
   password?: string | null;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tenants".
- */
-export interface Tenant {
-  id: string;
-  /**
-   * This is the name of the store (e.g. Grace's Store)
-   */
-  name: string;
-  /**
-   * This is the subdomain for the (e.g. slug.hamroad.com)
-   */
-  slug: string;
-  image?: (string | null) | Media;
-  /**
-   * Stripe Account ID associated with your shop
-   */
-  stripeAccountId: string;
-  /**
-   * You cannot create products until you submit your Stripe details
-   */
-  stripeDetailsSubmitted?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * You must verify your account before creating products
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -254,7 +255,21 @@ export interface Product {
   id: string;
   tenant?: (string | null) | Tenant;
   name: string;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Price in USD
    */
@@ -266,7 +281,29 @@ export interface Product {
   /**
    * Protected content only visible to customers after purchase. Add product documentation, downloadable files, getting started guides and bonus materials, Supports Markdown formatting
    */
-  content?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * If checked this product will be archived
+   */
+  isArchived?: boolean | null;
+  /**
+   * If checked this product will not be shown on the public storefront
+   */
+  isPrivate?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -393,6 +430,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  tenant?: T;
   alt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -433,6 +471,8 @@ export interface ProductsSelect<T extends boolean = true> {
   tags?: T;
   refundPolicy?: T;
   content?: T;
+  isArchived?: T;
+  isPrivate?: T;
   updatedAt?: T;
   createdAt?: T;
 }

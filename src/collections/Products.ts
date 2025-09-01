@@ -6,10 +6,14 @@ import { isSuperAdmin } from "@/lib/access";
 export const Products: CollectionConfig = {
   slug: "products",
   access: {
+    read: ({ req }) => (isSuperAdmin(req.user) ? true : true),
     create: ({ req }) => {
       if (isSuperAdmin(req.user)) return true;
       const tenant = req.user?.tenants?.[0]?.tenant as Tenant;
       return Boolean(tenant?.stripeDetailsSubmitted);
+    },
+    delete: ({ req }) => {
+      return isSuperAdmin(req.user);
     },
   },
   admin: {
@@ -18,7 +22,7 @@ export const Products: CollectionConfig = {
   },
   fields: [
     { name: "name", type: "text", required: true },
-    { name: "description", type: "text" },
+    { name: "description", type: "richText" },
     {
       name: "price",
       type: "number",
@@ -43,10 +47,29 @@ export const Products: CollectionConfig = {
     },
     {
       name: "content",
-      type: "textarea",
+      type: "richText",
       admin: {
         description:
           "Protected content only visible to customers after purchase. Add product documentation, downloadable files, getting started guides and bonus materials, Supports Markdown formatting",
+      },
+    },
+    {
+      name: "isArchived",
+      label: "Archive",
+      defaultValue: false,
+      type: "checkbox",
+      admin: {
+        description: "If checked this product will be archived",
+      },
+    },
+    {
+      name: "isPrivate",
+      label: "Private",
+      defaultValue: false,
+      type: "checkbox",
+      admin: {
+        description:
+          "If checked this product will not be shown on the public storefront",
       },
     },
   ],
