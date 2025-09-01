@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -9,24 +7,21 @@ import { CategoriesSidebar } from "./categories-sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useTRPC } from "@/trpc/client";
-import { useProductFilters } from "@/modules/products/hooks/use-product-filters";
 
 interface Props {
   disabled?: boolean;
+  defaultValue?: string;
+  onChange?: (value: string) => void;
 }
 
-export const SearchInput = ({ disabled }: Props) => {
-  const [filters, setFilters] = useProductFilters();
-  const [searchValue, setSearchvalue] = useState(filters.search);
+export const SearchInput = ({ disabled, defaultValue, onChange }: Props) => {
+  const [searchValue, setSearchvalue] = useState(defaultValue || "");
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const timeoutId = setTimeout(
-      () => setFilters({ search: searchValue }),
-      450
-    );
+    const timeoutId = setTimeout(() => onChange?.(searchValue), 450);
     return () => clearTimeout(timeoutId);
-  }, [setFilters, searchValue]);
+  }, [searchValue, onChange]);
 
   const trpc = useTRPC();
   const { data: session } = useQuery(trpc.auth.session.queryOptions());
