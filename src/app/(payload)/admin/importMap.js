@@ -85,6 +85,6 @@ export const importMap = {
     TenantSelector_1d0591e3cf4f332c83a86da13a0de59a,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider":
     TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
-  "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler":
-    VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
+  //   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler":
+  //     VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
 };
