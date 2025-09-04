@@ -4,7 +4,6 @@ import { Label, Input, Textarea, Button } from "../components";
 
 import React, { useState } from "react";
 
-// Mock components for a form, as if from a UI library like ShadcnUI.
 export default function Page() {
   const [formData, setFormData] = useState({
     name: "",
@@ -21,9 +20,6 @@ export default function Page() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the data to an API route
-    // For this example, we'll just log it to the console
-    console.log("Form data submitted:", formData);
 
     // Simulate an API call
     await new Promise((resolve) => setTimeout(resolve, 1000));

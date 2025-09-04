@@ -44,6 +44,10 @@ export const libraryRouter = createTRPCRouter({
       const productData = await ctx.db.findByID({
         collection: "products",
         id: input.productId,
+        select: {
+          embedding: false,
+          embedding_text: false,
+        },
       });
       if (!productData) {
         throw new TRPCError({
@@ -75,6 +79,11 @@ export const libraryRouter = createTRPCRouter({
       const productsData = await ctx.db.find({
         collection: "products",
         pagination: false,
+        depth: 2,
+        select: {
+          embedding: false,
+          embedding_text: false,
+        },
         where: {
           id: {
             in: productIds,
@@ -82,27 +91,24 @@ export const libraryRouter = createTRPCRouter({
         },
       });
 
-      const reviewsProductIds = productsData.docs.map((doc) => doc.id);
+      let productReviews: Review[] = [];
 
-      const productReviews = await ctx.db.find({
-        collection: "reviews",
-        pagination: false,
-        depth: 0,
-        where: {
-          product: {
-            in: reviewsProductIds,
-          },
-        },
-      });
+      if (productsData.docs?.[0]?.reviews) {
+        productReviews = productsData.docs.flatMap(
+          (doc) => doc.reviews as Review[]
+        );
+      }
       const productToReviews: Record<string, Review[]> = {};
 
-      productReviews.docs.forEach((review) => {
-        const productId = review.product as string;
-        if (!productToReviews[productId]) {
-          productToReviews[productId] = [];
-        }
-        productToReviews[productId].push(review);
-      });
+      if (productReviews.length > 0) {
+        productReviews.forEach((review) => {
+          const productId = review.product as string;
+          if (!productToReviews[productId]) {
+            productToReviews[productId] = [];
+          }
+          productToReviews[productId].push(review);
+        });
+      }
 
       const dataWithSummarizedReviews = productsData.docs.map((doc) => {
         const id = doc.id;

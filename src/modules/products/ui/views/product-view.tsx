@@ -41,6 +41,7 @@ export const ProductView = ({ tenantSlug, productId }: Props) => {
   const { data } = useSuspenseQuery(
     trpc.products.getOne.queryOptions({ id: productId })
   );
+
   return (
     <div className="px-4 lg:px-12 py-10">
       <div className="border rounded-sm bg-white overflow-hidden">
@@ -151,7 +152,7 @@ export const ProductView = ({ tenantSlug, productId }: Props) => {
                   <h3 className="text-xl font-medium">Ratings</h3>
                   <div className="flex items-center gap-x-1 font-medium">
                     <StarIcon className="size-4 fill-black" />
-                    <p className="">{data.reviewRating}</p>
+                    <p className="">{data.reviewRating.toFixed(2)}</p>
                     <p className="text-base ml-2">
                       {data.reviewCount}{" "}
                       {data.reviewCount === 1 ? "rating" : "ratings"}

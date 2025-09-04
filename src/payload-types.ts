@@ -304,6 +304,17 @@ export interface Product {
    * If checked this product will not be shown on the public storefront
    */
   isPrivate?: boolean | null;
+  reviews?: (string | Review)[] | null;
+  embedding_text?: string | null;
+  embedding?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -473,6 +484,9 @@ export interface ProductsSelect<T extends boolean = true> {
   content?: T;
   isArchived?: T;
   isPrivate?: T;
+  reviews?: T;
+  embedding_text?: T;
+  embedding?: T;
   updatedAt?: T;
   createdAt?: T;
 }

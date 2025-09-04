@@ -33,6 +33,8 @@ export const productsRouter = createTRPCRouter({
         id: input.id,
         select: {
           content: false,
+          embedding: false,
+          embedding_text: false,
         },
       });
 
@@ -59,21 +61,15 @@ export const productsRouter = createTRPCRouter({
         isPurchased = !!ordersData.docs[0];
       }
 
-      const reviews = await ctx.db.find({
-        collection: "reviews",
-        pagination: false,
-        where: {
-          product: {
-            equals: input.id,
-          },
-        },
-      });
-
+      let reviews: Review[] = [];
+      if (product.reviews) {
+        reviews = product.reviews as Review[];
+      }
       const reviewRating =
-        reviews.docs.length === 0
+        reviews.length === 0
           ? 0
-          : reviews.docs.reduce((acc, review) => acc + review.rating, 0) /
-            reviews.totalDocs;
+          : reviews.reduce((acc, review) => acc + review.rating, 0) /
+            reviews.length;
 
       const ratingDistribution: Record<number, number> = {
         5: 0,
@@ -82,8 +78,8 @@ export const productsRouter = createTRPCRouter({
         2: 0,
         1: 0,
       };
-      if (reviews.totalDocs > 0) {
-        reviews.docs.forEach((review) => {
+      if (reviews.length > 0) {
+        reviews.forEach((review) => {
           const rating = review.rating;
           if (rating >= 1 && rating < 6) {
             ratingDistribution[rating] = (ratingDistribution[rating] || 0) + 1;
@@ -93,7 +89,7 @@ export const productsRouter = createTRPCRouter({
           const rating = Number(key);
           const count = ratingDistribution[rating] || 0;
           ratingDistribution[rating] = Math.round(
-            (count / reviews.totalDocs) * 100
+            (count / reviews.length) * 100
           );
         });
       }
@@ -102,7 +98,7 @@ export const productsRouter = createTRPCRouter({
         ...product,
         isPurchased,
         reviewRating,
-        reviewCount: reviews.totalDocs,
+        reviewCount: reviews.length,
         ratingDistribution,
         image: product.image as Media | null,
         tenant: product.tenant as Tenant & { image: Media | null },
@@ -206,31 +202,27 @@ export const productsRouter = createTRPCRouter({
       limit: input.limit,
       select: {
         content: false,
+        embedding: false,
+        embedding_text: false,
       },
       //   sort: "name",
     });
 
-    const reviewsProductIds = data.docs.map((doc) => doc.id);
+    let productReviews: Review[] = [];
 
-    const productReviews = await ctx.db.find({
-      collection: "reviews",
-      pagination: false,
-      depth: 0,
-      where: {
-        product: {
-          in: reviewsProductIds,
-        },
-      },
-    });
+    if (data.docs?.[0]?.reviews) {
+      productReviews = data.docs.flatMap((doc) => doc.reviews as Review[]);
+    }
     const productToReviews: Record<string, Review[]> = {};
-
-    productReviews.docs.forEach((review) => {
-      const productId = review.product as string;
-      if (!productToReviews[productId]) {
-        productToReviews[productId] = [];
-      }
-      productToReviews[productId].push(review);
-    });
+    if (productReviews.length > 0) {
+      productReviews.forEach((review) => {
+        const productId = review.product as string;
+        if (!productToReviews[productId]) {
+          productToReviews[productId] = [];
+        }
+        productToReviews[productId].push(review);
+      });
+    }
 
     const dataWithSummarizedReviews = data.docs.map((doc) => {
       const id = doc.id;

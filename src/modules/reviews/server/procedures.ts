@@ -57,12 +57,13 @@ export const reviewsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const data = await ctx.db.findByID({
+      const product = await ctx.db.findByID({
         collection: "products",
+        depth: 0,
         id: input.productId,
       });
 
-      if (!data) {
+      if (!product) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "product not found",
@@ -97,9 +98,21 @@ export const reviewsRouter = createTRPCRouter({
         collection: "reviews",
         data: {
           user: ctx.session.user.id,
-          product: data.id,
+          product: product.id,
           rating: input.rating,
           description: input.description,
+        },
+      });
+
+      const existingReviewIds = product.reviews || [];
+      const updatedReviewIds = Array.from(
+        new Set([...(existingReviewIds as string[]), product.id])
+      );
+      await ctx.db.update({
+        collection: "products",
+        id: product.id,
+        data: {
+          reviews: updatedReviewIds,
         },
       });
 

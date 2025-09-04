@@ -184,7 +184,10 @@ export const checkoutRouter = createTRPCRouter({
         depth: 2,
         pagination: false,
         select: {
+          reviews: false,
           content: false,
+          embedding: false,
+          embedding_text: false,
         },
         where: {
           and: [

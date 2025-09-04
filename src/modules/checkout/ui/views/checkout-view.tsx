@@ -99,7 +99,7 @@ const CheckoutView = ({ slug: tenantSlug }: { slug: string }) => {
                 productUrl={`${generateTenantURL(product.tenant.slug)}/products/${product.id}`}
                 tenantUrl={generateTenantURL(product.tenant.slug)}
                 tenantName={product.tenant.name}
-                price={product.price}
+                price={Number(product.price.toFixed(2))}
                 onRemove={() => removeProduct(product.id)}
               />
             ))}
