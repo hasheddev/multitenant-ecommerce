@@ -68,7 +68,9 @@ export interface Config {
   blocks: {};
   collections: {
     categories: Category;
+    'ai-chat': AiChat;
     media: Media;
+    messages: Message;
     orders: Order;
     products: Product;
     reviews: Review;
@@ -86,7 +88,9 @@ export interface Config {
   };
   collectionsSelect: {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    'ai-chat': AiChatSelect<false> | AiChatSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    messages: MessagesSelect<false> | MessagesSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
@@ -149,67 +153,11 @@ export interface Category {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
+ * via the `definition` "ai-chat".
  */
-export interface Media {
+export interface AiChat {
   id: string;
-  tenant?: (string | null) | Tenant;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tenants".
- */
-export interface Tenant {
-  id: string;
-  /**
-   * This is the name of the store (e.g. Grace's Store)
-   */
-  name: string;
-  /**
-   * This is the subdomain for the (e.g. slug.hamroad.com)
-   */
-  slug: string;
-  image?: (string | null) | Media;
-  /**
-   * Stripe Account ID associated with your shop
-   */
-  stripeAccountId: string;
-  /**
-   * You cannot create products until you submit your Stripe details
-   */
-  stripeDetailsSubmitted?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders".
- */
-export interface Order {
-  id: string;
-  name: string;
-  user?: (string | null) | User;
-  product?: (string | null) | Product;
-  /**
-   * Checkout session associated with the order
-   */
-  stripeCheckoutSessionId: string;
-  /**
-   * Stripe account associated with the order
-   */
-  stripeAccountId?: string | null;
+  user: string | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -244,6 +192,84 @@ export interface User {
       }[]
     | null;
   password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants".
+ */
+export interface Tenant {
+  id: string;
+  /**
+   * This is the name of the store (e.g. Grace's Store)
+   */
+  name: string;
+  /**
+   * This is the subdomain for the (e.g. slug.hamroad.com)
+   */
+  slug: string;
+  image?: (string | null) | Media;
+  /**
+   * Stripe Account ID associated with your shop
+   */
+  stripeAccountId: string;
+  /**
+   * You cannot create products until you submit your Stripe details
+   */
+  stripeDetailsSubmitted?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: string;
+  tenant?: (string | null) | Tenant;
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages".
+ */
+export interface Message {
+  id: string;
+  message: string;
+  author: 'ai-bot' | 'user';
+  chat: string | AiChat;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: string;
+  name: string;
+  user?: (string | null) | User;
+  product?: (string | null) | Product;
+  /**
+   * Checkout session associated with the order
+   */
+  stripeCheckoutSessionId: string;
+  /**
+   * Stripe account associated with the order
+   */
+  stripeAccountId?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * You must verify your account before creating products
@@ -354,8 +380,16 @@ export interface PayloadLockedDocument {
         value: string | Category;
       } | null)
     | ({
+        relationTo: 'ai-chat';
+        value: string | AiChat;
+      } | null)
+    | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'messages';
+        value: string | Message;
       } | null)
     | ({
         relationTo: 'orders';
@@ -438,6 +472,15 @@ export interface CategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-chat_select".
+ */
+export interface AiChatSelect<T extends boolean = true> {
+  user?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -454,6 +497,17 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages_select".
+ */
+export interface MessagesSelect<T extends boolean = true> {
+  message?: T;
+  author?: T;
+  chat?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

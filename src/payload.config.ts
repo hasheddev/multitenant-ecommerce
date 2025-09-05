@@ -18,6 +18,8 @@ import { Tenant } from "./collections/Tenant";
 import { Orders } from "./collections/Orders";
 import { Reviews } from "./collections/Reviews";
 import { isSuperAdmin } from "./lib/access";
+import { AiChat } from "./collections/Chats";
+import { Messages } from "./collections/Messages";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -34,7 +36,9 @@ export default buildConfig({
   },
   collections: [
     Categories,
+    AiChat,
     Media,
+    Messages,
     Orders,
     Products,
     Reviews,
