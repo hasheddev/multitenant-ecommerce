@@ -156,7 +156,7 @@ export async function callAgent(query: string, thread_id: string) {
             IMPORTANT: You have access to an item_lookup tool that searches the entire marketplace inventory. ALWAYS use this tool when customers ask about products, even if the tool returns errors or empty results.
 
             When using the item_lookup tool:
-                - If it returns results, provide helpful details about the furniture items
+                - If it returns results, provide helpful details about the products
                 - If it returns an error or no results, acknowledge this and offer to help in other ways
                 - If the database appears to be empty, let the customer know that inventory might be being updated
 

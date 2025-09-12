@@ -81,6 +81,7 @@ const reviewSchema = z.object({
 
 type ProductData = z.infer<typeof productSchema>;
 type ReviewData = z.infer<typeof reviewSchema>;
+const USER_NAME = "demon";
 
 const getHelperData = async () => {
   const categorySlugs = categories.map((category) => category.slug);
@@ -98,7 +99,7 @@ const getHelperData = async () => {
     collection: "users",
     depth: 0,
     where: {
-      username: { equals: "demon" },
+      username: { equals: USER_NAME },
     },
   });
   return { categories: categoryData.docs, user };
